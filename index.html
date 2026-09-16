@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#111827">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="UK Queues">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+  <title>UK Theme Park Queues</title>
+  <style>
+    :root{--bg:#f4f6f8;--panel:#fff;--text:#111827;--muted:#6b7280;--line:#e5e7eb;--green:#16a34a;--amber:#d97706;--orange:#ea580c;--red:#dc2626;--shadow:0 8px 24px rgba(17,24,39,.08);--radius:18px}
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;padding-bottom:calc(28px + env(safe-area-inset-bottom))}
+    header{position:sticky;top:0;z-index:20;color:#fff;background:linear-gradient(135deg,#111827,#1f2937);padding:calc(16px + env(safe-area-inset-top)) 16px 16px;box-shadow:0 4px 18px rgba(0,0,0,.14)}
+    .topbar{max-width:1100px;margin:auto;display:flex;gap:12px;align-items:center;justify-content:space-between} h1{font-size:21px;margin:0;font-weight:800;letter-spacing:-.02em}.sub{font-size:12px;color:#d1d5db;margin-top:3px}
+    button,select,input{font:inherit}.refresh{border:0;border-radius:12px;background:#fff;color:#111827;padding:10px 13px;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+    main{max-width:1100px;margin:auto;padding:16px}.notice{background:#fffbeb;border:1px solid #fde68a;border-radius:14px;padding:12px 14px;font-size:13px;line-height:1.45;margin-bottom:14px}
+    .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}.metric{background:var(--panel);border-radius:14px;padding:12px;box-shadow:var(--shadow)}.metric b{font-size:20px;display:block}.metric span{font-size:11px;color:var(--muted)}
+    .controls{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}.controls input,.controls select{width:100%;border:1px solid var(--line);background:#fff;border-radius:12px;padding:12px;color:var(--text)}
+    .parks{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}.park{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;border:1px solid #eef0f3}
+    .park-head{padding:16px;display:flex;justify-content:space-between;gap:12px;align-items:flex-start;border-bottom:1px solid var(--line)}.park h2{font-size:17px;margin:0 0 4px}.small{font-size:12px;color:var(--muted)}
+    .avg{font-size:13px;font-weight:800;white-space:nowrap;padding:7px 9px;border-radius:999px;background:#f3f4f6}.rides{padding:4px 0}.ride{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:12px 16px;border-bottom:1px solid #f1f3f5}.ride:last-child{border-bottom:0}
+    .ride-name{font-size:14px;font-weight:650}.ride-meta{font-size:11px;color:var(--muted);margin-top:2px}.wait{min-width:62px;text-align:center;font-size:13px;font-weight:850;color:white;border-radius:10px;padding:7px 8px}
+    .w0{background:#6b7280}.w1{background:var(--green)}.w2{background:var(--amber)}.w3{background:var(--orange)}.w4{background:var(--red)}.empty,.error{padding:24px 16px;text-align:center;color:var(--muted);font-size:13px}.loading{padding:48px 16px;text-align:center;color:var(--muted)}
+    footer{max-width:1100px;margin:18px auto 0;padding:0 16px;color:var(--muted);font-size:11px;line-height:1.5}.pill{display:inline-block;font-size:10px;border-radius:999px;padding:3px 7px;margin-left:5px;background:#ecfdf5;color:#166534}
+    @media(max-width:600px){main{padding:12px}.summary{grid-template-columns:repeat(3,1fr)}.metric{padding:10px}.metric b{font-size:18px}.controls{grid-template-columns:1fr}.parks{grid-template-columns:1fr}.refresh{padding:9px 11px}}
+  </style>
+</head>
+<body>
+<header><div class="topbar"><div><h1>🎢 UK Theme Park Queues</h1><div class="sub" id="updated">Loading live data…</div></div><button class="refresh" id="refreshBtn">Refresh</button></div></header>
+<main>
+  <div class="notice">Live waits are shown where the data provider has current queue information. Parks or rides without a public live feed are not given estimated or invented waits.</div>
+  <section class="summary"><div class="metric"><b id="openCount">–</b><span>rides open</span></div><div class="metric"><b id="avgWait">–</b><span>average wait</span></div><div class="metric"><b id="maxWait">–</b><span>longest wait</span></div></section>
+  <section class="controls"><input id="search" type="search" placeholder="Search park or ride…"><select id="sort"><option value="park">Sort: park</option><option value="short">Shortest waits first</option><option value="long">Longest waits first</option></select></section>
+  <div id="app" class="loading">Loading UK theme parks…</div>
+</main>
+<footer>Queue data comes from public theme-park wait-time feeds. This personal dashboard refreshes every 5 minutes and may lag official park apps or on-site displays.</footer>
+<script>
+const TARGET_PARKS=["Alton Towers","Thorpe Park","Chessington World of Adventures","LEGOLAND Windsor","Paultons Park","Blackpool Pleasure Beach","Flamingo Land"];
+let allParks=[],lastUpdated=null;
+const norm=s=>(s||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+const parkWanted=name=>{const n=norm(name);return TARGET_PARKS.some(x=>n.includes(norm(x))||norm(x).includes(n))};
+const waitClass=m=>m==null?"w0":m<=15?"w1":m<=30?"w2":m<=50?"w3":"w4";
+async function fetchJson(url){const r=await fetch(url,{cache:"no-store"});if(!r.ok)throw new Error(`HTTP ${r.status}`);return r.json()}
+function extractParks(data){const out=[],arr=data.destinations||data||[];for(const d of arr){const parks=d.parks||d.children||[];for(const p of parks){if(parkWanted(p.name))out.push({id:p.id,name:p.name,destination:d.name||""})}if(d.name&&parkWanted(d.name))out.push({id:d.id,name:d.name,destination:d.name})}const seen=new Set();return out.filter(p=>p.id&&!seen.has(p.id)&&seen.add(p.id))}
+function parseLive(data){const entities=data.liveData||data.entities||data||[],rides=[];for(const e of entities){if(!e||!e.name)continue;const qt=e.queue||{},standby=qt.STANDBY||qt.standby||{};let wait=standby.waitTime;if(wait==null)wait=e.waitTime;wait=wait==null?null:Number(wait);const status=(e.status||"").toUpperCase();const isRide=["ATTRACTION","SHOW","RESTAURANT"].includes((e.entityType||"").toUpperCase())||qt.STANDBY||qt.standby||e.waitTime!=null;if(!isRide)continue;rides.push({name:e.name,wait:Number.isFinite(wait)?wait:null,status:status||(wait!=null?"OPERATING":"UNKNOWN"),type:e.entityType||"ATTRACTION"})}return rides}
+async function load(){const app=document.getElementById("app");app.className="loading";app.textContent="Loading live queue times…";try{const d=await fetchJson("https://api.themeparks.wiki/v1/destinations");const parks=extractParks(d);const results=await Promise.all(parks.map(async p=>{try{const live=await fetchJson(`https://api.themeparks.wiki/v1/entity/${encodeURIComponent(p.id)}/live`);return {...p,rides:parseLive(live),error:null}}catch(err){return {...p,rides:[],error:err.message}}}));allParks=results.sort((a,b)=>a.name.localeCompare(b.name));lastUpdated=new Date();render()}catch(err){app.className="error";app.innerHTML=`Could not load the live feed.<br><small>${err.message}</small>`;document.getElementById("updated").textContent="Live data unavailable"}}
+function filteredParks(){const q=norm(document.getElementById("search").value),sort=document.getElementById("sort").value;return allParks.map(p=>{let rides=p.rides.filter(r=>!q||norm(p.name).includes(q)||norm(r.name).includes(q));if(sort==="short")rides.sort((a,b)=>(a.wait??9999)-(b.wait??9999));if(sort==="long")rides.sort((a,b)=>(b.wait??-1)-(a.wait??-1));return {...p,rides}}).filter(p=>!q||norm(p.name).includes(q)||p.rides.length)}
+function escapeHtml(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
+function render(){const app=document.getElementById("app");app.className="parks";app.innerHTML="";const visible=filteredParks();const open=allParks.flatMap(p=>p.rides).filter(r=>r.status==="OPERATING"&&Number.isFinite(r.wait)),waits=open.map(r=>r.wait);document.getElementById("openCount").textContent=open.length||"0";document.getElementById("avgWait").textContent=waits.length?`${Math.round(waits.reduce((a,b)=>a+b,0)/waits.length)}m`:"—";document.getElementById("maxWait").textContent=waits.length?`${Math.max(...waits)}m`:"—";document.getElementById("updated").textContent=lastUpdated?`Updated ${lastUpdated.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})}`:"Not updated";if(!visible.length){app.className="empty";app.textContent="No matching park or ride.";return}for(const p of visible){const card=document.createElement("section");card.className="park";const operating=p.rides.filter(r=>r.status==="OPERATING"&&Number.isFinite(r.wait)),avg=operating.length?Math.round(operating.reduce((s,r)=>s+r.wait,0)/operating.length):null;const head=document.createElement("div");head.className="park-head";head.innerHTML=`<div><h2>${escapeHtml(p.name)}</h2><div class="small">${operating.length} live waits${p.destination&&p.destination!==p.name?` · ${escapeHtml(p.destination)}`:""}</div></div><div class="avg">${avg==null?"No live avg":`${avg} min avg`}</div>`;card.appendChild(head);const rides=document.createElement("div");rides.className="rides";if(p.error){rides.innerHTML='<div class="error">Live feed unavailable for this park right now.</div>'}else if(!p.rides.length){rides.innerHTML='<div class="empty">No current public ride waits available.</div>'}else{for(const r of p.rides){const row=document.createElement("div");row.className="ride";const isOpen=r.status==="OPERATING",label=isOpen&&Number.isFinite(r.wait)?`${r.wait} min`:r.status==="CLOSED"?"Closed":Number.isFinite(r.wait)?`${r.wait} min`:r.status.replaceAll("_"," ");row.innerHTML=`<div><div class="ride-name">${escapeHtml(r.name)}${isOpen?'<span class="pill">Open</span>':''}</div><div class="ride-meta">${escapeHtml(r.type)}</div></div><div class="wait ${isOpen?waitClass(r.wait):"w0"}">${escapeHtml(label)}</div>`;rides.appendChild(row)}}card.appendChild(rides);app.appendChild(card)}}
+document.getElementById("refreshBtn").addEventListener("click",load);document.getElementById("search").addEventListener("input",render);document.getElementById("sort").addEventListener("change",render);load();setInterval(load,5*60*1000);if("serviceWorker"in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}))}
+</script>
+</body></html>
