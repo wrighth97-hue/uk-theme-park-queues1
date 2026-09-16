@@ -18,38 +18,512 @@
     button,select,input{font:inherit}.refresh{border:0;border-radius:12px;background:#fff;color:#111827;padding:10px 13px;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,.12)}
     main{max-width:1100px;margin:auto;padding:16px}.notice{background:#fffbeb;border:1px solid #fde68a;border-radius:14px;padding:12px 14px;font-size:13px;line-height:1.45;margin-bottom:14px}
     .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}.metric{background:var(--panel);border-radius:14px;padding:12px;box-shadow:var(--shadow)}.metric b{font-size:20px;display:block}.metric span{font-size:11px;color:var(--muted)}
-    .controls{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}.controls input,.controls select{width:100%;border:1px solid var(--line);background:#fff;border-radius:12px;padding:12px;color:var(--text)}
+    .controls{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;margin-bottom:14px}.controls input,.controls select{width:100%;border:1px solid var(--line);background:#fff;border-radius:12px;padding:12px;color:var(--text)}.fav-filter{border:1px solid var(--line);background:#fff;color:var(--text);border-radius:12px;padding:12px 14px;font-weight:750;white-space:nowrap}.fav-filter.active{background:#111827;color:#fff;border-color:#111827}
     .parks{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}.park{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;border:1px solid #eef0f3}
     .park-head{padding:16px;display:flex;justify-content:space-between;gap:12px;align-items:flex-start;border-bottom:1px solid var(--line)}.park h2{font-size:17px;margin:0 0 4px}.small{font-size:12px;color:var(--muted)}
-    .avg{font-size:13px;font-weight:800;white-space:nowrap;padding:7px 9px;border-radius:999px;background:#f3f4f6}.rides{padding:4px 0}.ride{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:12px 16px;border-bottom:1px solid #f1f3f5}.ride:last-child{border-bottom:0}
+    .avg{font-size:13px;font-weight:800;white-space:nowrap;padding:7px 9px;border-radius:999px;background:#f3f4f6}.avg.closed{background:#f3f4f6;color:#6b7280}.rides{padding:4px 0}.ride{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;padding:12px 16px;border-bottom:1px solid #f1f3f5}.ride:last-child{border-bottom:0}.fav-btn{width:38px;height:38px;border:1px solid var(--line);background:#fff;border-radius:10px;font-size:21px;line-height:1;color:#9ca3af}.fav-btn.saved{color:#f59e0b;background:#fffbeb;border-color:#fde68a}
     .ride-name{font-size:14px;font-weight:650}.ride-meta{font-size:11px;color:var(--muted);margin-top:2px}.wait{min-width:62px;text-align:center;font-size:13px;font-weight:850;color:white;border-radius:10px;padding:7px 8px}
     .w0{background:#6b7280}.w1{background:var(--green)}.w2{background:var(--amber)}.w3{background:var(--orange)}.w4{background:var(--red)}.empty,.error{padding:24px 16px;text-align:center;color:var(--muted);font-size:13px}.loading{padding:48px 16px;text-align:center;color:var(--muted)}
     footer{max-width:1100px;margin:18px auto 0;padding:0 16px;color:var(--muted);font-size:11px;line-height:1.5}.pill{display:inline-block;font-size:10px;border-radius:999px;padding:3px 7px;margin-left:5px;background:#ecfdf5;color:#166534}
-    @media(max-width:600px){main{padding:12px}.summary{grid-template-columns:repeat(3,1fr)}.metric{padding:10px}.metric b{font-size:18px}.controls{grid-template-columns:1fr}.parks{grid-template-columns:1fr}.refresh{padding:9px 11px}}
+
+
+
+    .train-banner{
+      background:linear-gradient(180deg,#eff6ff,#ffffff);
+      border:1px solid #dbeafe;border-radius:18px;box-shadow:var(--shadow);
+      margin:0 0 14px;padding:14px 14px 10px;overflow:hidden
+    }
+    .train-banner-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:10px}
+    .train-banner h2{font-size:18px;margin:0 0 3px}
+    .train-banner p{margin:0;font-size:12px;color:var(--muted);line-height:1.4}
+    .train-track{height:6px;background:repeating-linear-gradient(90deg,#4b5563 0 20px,#111827 20px 32px);border-radius:999px;opacity:.9;margin:8px 0 10px}
+    .train-row{display:flex;gap:10px;overflow-x:auto;padding-bottom:2px}
+    .carriage{
+      min-width:112px;background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:10px;
+      box-shadow:0 4px 14px rgba(17,24,39,.05);position:relative
+    }
+    .carriage:before{
+      content:"";position:absolute;left:10px;right:10px;top:8px;height:8px;border-radius:999px;
+      background:linear-gradient(90deg,#111827,#374151)
+    }
+    .carriage-label{font-size:11px;color:var(--muted);margin-top:10px}
+    .carriage-windows{display:flex;gap:6px;margin-top:8px}
+    .window{
+      flex:1;background:#dbeafe;border:1px solid #bfdbfe;border-radius:8px;height:34px;
+      display:grid;place-items:center;font-size:14px;font-weight:850;color:#1d4ed8
+    }
+    .window.small{font-size:12px}
+    .carriage-wheel{
+      position:absolute;bottom:-8px;width:16px;height:16px;background:#111827;border-radius:999px
+    }
+    .carriage-wheel.left{left:16px}.carriage-wheel.right{right:16px}
+    .section-title-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:2px}
+    .section-chip{font-size:11px;background:#eff6ff;border:1px solid #dbeafe;color:#1d4ed8;padding:5px 8px;border-radius:999px;font-weight:700}
+    .window-badge{
+      display:inline-grid;place-items:center;min-width:28px;height:24px;padding:0 7px;
+      background:#dbeafe;border:1px solid #bfdbfe;border-radius:8px;color:#1d4ed8;font-size:12px;font-weight:850
+    }
+    .park{overflow:visible}
+    .park-head{position:relative}
+    .park-train-strip{display:flex;gap:6px;margin-top:8px}
+    .park-window{display:inline-grid;place-items:center;min-width:30px;height:24px;padding:0 6px;background:#eef2ff;border:1px solid #c7d2fe;border-radius:8px;font-size:12px;font-weight:850;color:#4338ca}
+    .controls input,.controls select,#favFilter{position:relative}
+
+    .park-title-row{display:flex;align-items:center;gap:10px}
+    .park-logo-wrap,.ride-logo-wrap{
+      flex:0 0 auto;display:grid;place-items:center;overflow:hidden;background:#f3f4f6;
+      border:1px solid #e5e7eb;color:#374151;font-weight:850;letter-spacing:.02em
+    }
+    .park-logo-wrap{width:42px;height:42px;border-radius:12px;font-size:13px}
+    .ride-logo-wrap{width:34px;height:34px;border-radius:9px;font-size:11px}
+    .park-logo-wrap img,.ride-logo-wrap img{width:100%;height:100%;object-fit:contain;background:#fff}
+    .ride-main{display:flex;align-items:center;gap:10px;min-width:0}
+    .ride-copy{min-width:0}
+    .park-logo-fallback,.ride-logo-fallback{display:grid;place-items:center;width:100%;height:100%}
+
+    .history-panel{background:var(--panel);border:1px solid #eef0f3;border-radius:var(--radius);box-shadow:var(--shadow);margin:0 0 14px;overflow:hidden}
+    .history-head{padding:15px 16px 8px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+    .history-head h2{font-size:17px;margin:0 0 3px}.history-head p{font-size:12px;color:var(--muted);margin:0;line-height:1.4}
+    .history-controls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;padding:8px 16px 12px}
+    .history-controls select{width:100%;border:1px solid var(--line);background:#fff;border-radius:11px;padding:10px;color:var(--text)}
+    .history-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 16px 12px}
+    .history-stat{background:#f9fafb;border:1px solid #f0f1f3;border-radius:11px;padding:10px}
+    .history-stat b{display:block;font-size:16px}.history-stat span{font-size:10px;color:var(--muted)}
+    .chart-wrap{padding:4px 12px 14px;overflow:hidden}
+    .chart-box{min-height:230px;border:1px solid #eef0f3;border-radius:13px;background:#fff;padding:8px;display:flex;align-items:center;justify-content:center}
+    .chart-empty{font-size:13px;color:var(--muted);text-align:center;line-height:1.5;padding:32px 18px}
+    .history-chart{width:100%;height:auto;display:block;overflow:visible}
+    .chart-legend{display:flex;gap:14px;flex-wrap:wrap;padding:0 16px 14px;font-size:11px;color:var(--muted)}
+    .legend-line{display:inline-flex;align-items:center;gap:6px}.legend-swatch{width:18px;height:3px;border-radius:2px;background:#2563eb}.legend-swatch.avg{background:#d97706}
+
+    @media(max-width:600px){main{padding:12px}.summary{grid-template-columns:repeat(3,1fr)}.metric{padding:10px}.metric b{font-size:18px}.controls{grid-template-columns:1fr}.history-controls{grid-template-columns:1fr}.parks{grid-template-columns:1fr}.refresh{padding:9px 11px}}
   </style>
 </head>
 <body>
 <header><div class="topbar"><div><h1>🎢 UK Theme Park Queues</h1><div class="sub" id="updated">Loading live data…</div></div><button class="refresh" id="refreshBtn">Refresh</button></div></header>
 <main>
   <div class="notice">Live waits are shown where the data provider has current queue information. Parks or rides without a public live feed are not given estimated or invented waits.</div>
+  <section class="train-banner">
+    <div class="train-banner-top">
+      <div>
+        <div class="section-title-row">
+          <h2>🚂 Queue Express</h2>
+          <span class="section-chip">Train-themed dashboard</span>
+        </div>
+        <p>The summary below is styled like train carriages, with the live numbers shown in the windows.</p>
+      </div>
+    </div>
+    <div class="train-track"></div>
+    <div class="train-row">
+      <div class="carriage">
+        <div class="carriage-label">Rides open</div>
+        <div class="carriage-windows"><div class="window" id="trainOpenA">–</div><div class="window" id="trainOpenB">–</div></div>
+        <div class="carriage-wheel left"></div><div class="carriage-wheel right"></div>
+      </div>
+      <div class="carriage">
+        <div class="carriage-label">Average wait</div>
+        <div class="carriage-windows"><div class="window small" id="trainAvgA">–</div><div class="window small" id="trainAvgB">–</div></div>
+        <div class="carriage-wheel left"></div><div class="carriage-wheel right"></div>
+      </div>
+      <div class="carriage">
+        <div class="carriage-label">Longest queue</div>
+        <div class="carriage-windows"><div class="window small" id="trainMaxA">–</div><div class="window small" id="trainMaxB">–</div></div>
+        <div class="carriage-wheel left"></div><div class="carriage-wheel right"></div>
+      </div>
+      <div class="carriage">
+        <div class="carriage-label">Favourite rides</div>
+        <div class="carriage-windows"><div class="window" id="trainFavA">–</div><div class="window" id="trainFavB">–</div></div>
+        <div class="carriage-wheel left"></div><div class="carriage-wheel right"></div>
+      </div>
+    </div>
+  </section>
   <section class="summary"><div class="metric"><b id="openCount">–</b><span>rides open</span></div><div class="metric"><b id="avgWait">–</b><span>average wait</span></div><div class="metric"><b id="maxWait">–</b><span>longest wait</span></div></section>
-  <section class="controls"><input id="search" type="search" placeholder="Search park or ride…"><select id="sort"><option value="park">Sort: park</option><option value="short">Shortest waits first</option><option value="long">Longest waits first</option></select></section>
+  <section class="controls"><input id="search" type="search" placeholder="Search park or ride…"><select id="sort"><option value="park">Sort: park</option><option value="short">Shortest waits first</option><option value="long">Longest waits first</option></select><button id="favFilter" class="fav-filter" type="button">☆ Favourites</button></section>
+  <section class="history-panel">
+    <div class="history-head">
+      <div><div class="section-title-row"><h2>📈 History & averages</h2><span class="section-chip">Journey graph</span></div><p>Select a park or ride to see the wait-time history recorded by this device.</p></div>
+    </div>
+    <div class="history-controls">
+      <select id="historyPark"><option value="">Select park</option></select>
+      <select id="historyRide" disabled><option value="">Park average</option></select>
+      <select id="historyRange">
+        <option value="today">Today</option>
+        <option value="7">Last 7 days</option>
+        <option value="30">Last 30 days</option>
+        <option value="90">Last 90 days</option>
+      </select>
+    </div>
+    <div class="history-stats">
+      <div class="history-stat"><b id="histNow">—</b><span>latest recorded</span></div>
+      <div class="history-stat"><b id="histAvg">—</b><span>period average</span></div>
+      <div class="history-stat"><b id="histSamples">0</b><span>samples</span></div>
+    </div>
+    <div class="chart-wrap"><div class="chart-box" id="historyChartBox"><div class="chart-empty">Choose a park to view its history.</div></div></div>
+    <div class="chart-legend"><span class="legend-line"><i class="legend-swatch"></i>Recorded wait</span><span class="legend-line"><i class="legend-swatch avg"></i>Period average</span></div>
+  </section>
   <div id="app" class="loading">Loading UK theme parks…</div>
 </main>
 <footer>Queue data comes from public theme-park wait-time feeds. This personal dashboard refreshes every 5 minutes and may lag official park apps or on-site displays.</footer>
 <script>
 const TARGET_PARKS=["Alton Towers","Thorpe Park","Chessington World of Adventures","LEGOLAND Windsor","Paultons Park","Blackpool Pleasure Beach","Flamingo Land"];
-let allParks=[],lastUpdated=null;
+let allParks=[],lastUpdated=null,favouritesOnly=false;
+let favourites=new Set();
+try{favourites=new Set(JSON.parse(localStorage.getItem("ukQueuesFavourites")||"[]"))}catch(e){favourites=new Set()}
+
+const saveFavourites=()=>localStorage.setItem("ukQueuesFavourites",JSON.stringify([...favourites]));
+function splitForWindows(value,suffix=""){
+  const txt = String(value ?? "—");
+  if(txt==="—") return ["—","—"];
+  if(txt.length<=2 && !suffix) return [txt,""];
+  if(suffix && txt.endsWith(suffix)) return [txt.slice(0,-suffix.length),suffix];
+  if(txt.length<=3) return [txt.slice(0,2),txt.slice(2)];
+  return [txt.slice(0,Math.ceil(txt.length/2)),txt.slice(Math.ceil(txt.length/2))];
+}
+
 const norm=s=>(s||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+const favouriteKey=(park,ride)=>`${norm(park)}|${norm(ride)}`;
+function toggleFavourite(key){if(favourites.has(key))favourites.delete(key);else favourites.add(key);saveFavourites();render()}
 const parkWanted=name=>{const n=norm(name);return TARGET_PARKS.some(x=>n.includes(norm(x))||norm(x).includes(n))};
 const waitClass=m=>m==null?"w0":m<=15?"w1":m<=30?"w2":m<=50?"w3":"w4";
+const PARK_LOGOS={
+  "Alton Towers":"assets/parks/alton-towers.png",
+  "Thorpe Park":"assets/parks/thorpe-park.png",
+  "Chessington World of Adventures":"assets/parks/chessington.png",
+  "LEGOLAND Windsor":"assets/parks/legoland-windsor.png",
+  "Paultons Park":"assets/parks/paultons-park.png",
+  "Blackpool Pleasure Beach":"assets/parks/blackpool-pleasure-beach.png",
+  "Flamingo Land":"assets/parks/flamingo-land.png"
+};
+
+const RIDE_LOGOS={
+  "Hyperia":"assets/rides/hyperia.png",
+  "Stealth":"assets/rides/stealth.png",
+  "Nemesis Inferno":"assets/rides/nemesis-inferno.png",
+  "The Swarm":"assets/rides/the-swarm.png",
+  "SAW - The Ride":"assets/rides/saw-the-ride.png",
+  "SAW – The Ride":"assets/rides/saw-the-ride.png",
+  "Nemesis Reborn":"assets/rides/nemesis-reborn.png",
+  "The Smiler":"assets/rides/the-smiler.png",
+  "Wicker Man":"assets/rides/wicker-man.png",
+  "Oblivion":"assets/rides/oblivion.png",
+  "TH13TEEN":"assets/rides/th13teen.png",
+  "Galactica":"assets/rides/galactica.png",
+  "Rita":"assets/rides/rita.png",
+  "ICON":"assets/rides/icon.png",
+  "The Big One":"assets/rides/the-big-one.png"
+};
+
+function initials(name,max=2){
+  const words=String(name||"").replace(/[^A-Za-z0-9 ]+/g," ").trim().split(/\s+/).filter(Boolean);
+  if(!words.length)return "🎢";
+  if(words.length===1)return words[0].slice(0,max).toUpperCase();
+  return (words[0][0]+words[words.length-1][0]).toUpperCase();
+}
+function logoMarkup(type,name){
+  const map=type==="park"?PARK_LOGOS:RIDE_LOGOS;
+  const src=map[name]||`assets/${type==="park"?"parks":"rides"}/${norm(name).replace(/\s+/g,"-")}.png`;
+  const cls=type==="park"?"park-logo-wrap":"ride-logo-wrap";
+  const fallback=type==="park"?"park-logo-fallback":"ride-logo-fallback";
+  return `<div class="${cls}" aria-hidden="true"><img src="${escapeHtml(src)}" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'"><span class="${fallback}" style="display:none">${escapeHtml(initials(name,type==="park"?2:2))}</span></div>`;
+}
+
 async function fetchJson(url){const r=await fetch(url,{cache:"no-store"});if(!r.ok)throw new Error(`HTTP ${r.status}`);return r.json()}
-function extractParks(data){const out=[],arr=data.destinations||data||[];for(const d of arr){const parks=d.parks||d.children||[];for(const p of parks){if(parkWanted(p.name))out.push({id:p.id,name:p.name,destination:d.name||""})}if(d.name&&parkWanted(d.name))out.push({id:d.id,name:d.name,destination:d.name})}const seen=new Set();return out.filter(p=>p.id&&!seen.has(p.id)&&seen.add(p.id))}
-function parseLive(data){const entities=data.liveData||data.entities||data||[],rides=[];for(const e of entities){if(!e||!e.name)continue;const qt=e.queue||{},standby=qt.STANDBY||qt.standby||{};let wait=standby.waitTime;if(wait==null)wait=e.waitTime;wait=wait==null?null:Number(wait);const status=(e.status||"").toUpperCase();const isRide=["ATTRACTION","SHOW","RESTAURANT"].includes((e.entityType||"").toUpperCase())||qt.STANDBY||qt.standby||e.waitTime!=null;if(!isRide)continue;rides.push({name:e.name,wait:Number.isFinite(wait)?wait:null,status:status||(wait!=null?"OPERATING":"UNKNOWN"),type:e.entityType||"ATTRACTION"})}return rides}
-async function load(){const app=document.getElementById("app");app.className="loading";app.textContent="Loading live queue times…";try{const d=await fetchJson("https://api.themeparks.wiki/v1/destinations");const parks=extractParks(d);const results=await Promise.all(parks.map(async p=>{try{const live=await fetchJson(`https://api.themeparks.wiki/v1/entity/${encodeURIComponent(p.id)}/live`);return {...p,rides:parseLive(live),error:null}}catch(err){return {...p,rides:[],error:err.message}}}));allParks=results.sort((a,b)=>a.name.localeCompare(b.name));lastUpdated=new Date();render()}catch(err){app.className="error";app.innerHTML=`Could not load the live feed.<br><small>${err.message}</small>`;document.getElementById("updated").textContent="Live data unavailable"}}
-function filteredParks(){const q=norm(document.getElementById("search").value),sort=document.getElementById("sort").value;return allParks.map(p=>{let rides=p.rides.filter(r=>!q||norm(p.name).includes(q)||norm(r.name).includes(q));if(sort==="short")rides.sort((a,b)=>(a.wait??9999)-(b.wait??9999));if(sort==="long")rides.sort((a,b)=>(b.wait??-1)-(a.wait??-1));return {...p,rides}}).filter(p=>!q||norm(p.name).includes(q)||p.rides.length)}
+
+function extractParks(data){
+  const out=[],arr=data.destinations||data||[];
+  for(const d of arr){
+    const parks=d.parks||d.children||[];
+    for(const p of parks){if(parkWanted(p.name))out.push({id:p.id,name:p.name,destination:d.name||""})}
+    if(d.name&&parkWanted(d.name))out.push({id:d.id,name:d.name,destination:d.name})
+  }
+  const seen=new Set();
+  return out.filter(p=>p.id&&!seen.has(p.id)&&seen.add(p.id))
+}
+
+function parseLive(data){
+  const entities=data.liveData||data.entities||data||[],rides=[];
+  for(const e of entities){
+    if(!e||!e.name)continue;
+    const qt=e.queue||{},standby=qt.STANDBY||qt.standby||{};
+    let wait=standby.waitTime;
+    if(wait==null)wait=e.waitTime;
+    wait=wait==null?null:Number(wait);
+    const status=(e.status||"").toUpperCase();
+    const isRide=["ATTRACTION","SHOW","RESTAURANT"].includes((e.entityType||"").toUpperCase())||qt.STANDBY||qt.standby||e.waitTime!=null;
+    if(!isRide)continue;
+    rides.push({name:e.name,wait:Number.isFinite(wait)?wait:null,status:status||(wait!=null?"OPERATING":"UNKNOWN"),type:e.entityType||"ATTRACTION"})
+  }
+  return rides
+}
+
+/* ---------- Local historical database ---------- */
+const HIST_DB="ukQueuesHistoryDB",HIST_VERSION=1,HIST_STORE="samples";
+let historyDbPromise=null;
+
+function openHistoryDb(){
+  if(historyDbPromise)return historyDbPromise;
+  historyDbPromise=new Promise((resolve,reject)=>{
+    const req=indexedDB.open(HIST_DB,HIST_VERSION);
+    req.onupgradeneeded=()=>{
+      const db=req.result;
+      const store=db.createObjectStore(HIST_STORE,{keyPath:"id"});
+      store.createIndex("entityTime",["entity","time"],{unique:false});
+      store.createIndex("time","time",{unique:false});
+    };
+    req.onsuccess=()=>resolve(req.result);
+    req.onerror=()=>reject(req.error);
+  });
+  return historyDbPromise
+}
+
+const parkEntity=p=>`park|${norm(p)}`;
+const rideEntity=(p,r)=>`ride|${norm(p)}|${norm(r)}`;
+
+async function saveHistorySample(sample){
+  try{
+    const db=await openHistoryDb();
+    await new Promise((resolve,reject)=>{
+      const tx=db.transaction(HIST_STORE,"readwrite");
+      tx.objectStore(HIST_STORE).put(sample);
+      tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)
+    })
+  }catch(e){}
+}
+
+async function recordHistory(parks){
+  const now=Date.now(),bucket=Math.floor(now/(5*60*1000))*(5*60*1000),writes=[];
+  for(const p of parks){
+    const open=p.rides.filter(r=>r.status==="OPERATING"&&Number.isFinite(r.wait));
+    if(open.length){
+      const parkAvg=Math.round(open.reduce((s,r)=>s+r.wait,0)/open.length);
+      writes.push(saveHistorySample({
+        id:`${parkEntity(p.name)}|${bucket}`,entity:parkEntity(p.name),time:bucket,wait:parkAvg,park:p.name,ride:"",kind:"park"
+      }));
+    }
+    for(const r of open){
+      writes.push(saveHistorySample({
+        id:`${rideEntity(p.name,r.name)}|${bucket}`,entity:rideEntity(p.name,r.name),time:bucket,wait:r.wait,park:p.name,ride:r.name,kind:"ride"
+      }))
+    }
+  }
+  await Promise.all(writes);
+  cleanupOldHistory()
+}
+
+async function cleanupOldHistory(){
+  const last=Number(localStorage.getItem("ukQueuesHistoryCleanup")||0);
+  if(Date.now()-last<24*60*60*1000)return;
+  localStorage.setItem("ukQueuesHistoryCleanup",String(Date.now()));
+  try{
+    const db=await openHistoryDb(),cutoff=Date.now()-90*24*60*60*1000;
+    await new Promise((resolve,reject)=>{
+      const tx=db.transaction(HIST_STORE,"readwrite"),idx=tx.objectStore(HIST_STORE).index("time");
+      const req=idx.openCursor(IDBKeyRange.upperBound(cutoff));
+      req.onsuccess=()=>{const c=req.result;if(c){c.delete();c.continue()}};
+      tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)
+    })
+  }catch(e){}
+}
+
+async function getHistory(entity,start){
+  if(!entity)return[];
+  try{
+    const db=await openHistoryDb();
+    return await new Promise((resolve,reject)=>{
+      const tx=db.transaction(HIST_STORE,"readonly"),idx=tx.objectStore(HIST_STORE).index("entityTime");
+      const range=IDBKeyRange.bound([entity,start],[entity,Number.MAX_SAFE_INTEGER]);
+      const req=idx.getAll(range);
+      req.onsuccess=()=>resolve((req.result||[]).sort((a,b)=>a.time-b.time));
+      req.onerror=()=>reject(req.error)
+    })
+  }catch(e){return[]}
+}
+
+function rangeStart(value){
+  const now=new Date();
+  if(value==="today"){
+    const d=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+    return d.getTime()
+  }
+  return Date.now()-Number(value)*24*60*60*1000
+}
+
+function aggregateForChart(rows,range){
+  if(range==="today")return rows;
+  const bucketMs=range==="7"?2*60*60*1000:24*60*60*1000;
+  const buckets=new Map();
+  for(const row of rows){
+    const key=Math.floor(row.time/bucketMs)*bucketMs;
+    const b=buckets.get(key)||{time:key,sum:0,n:0};
+    b.sum+=row.wait;b.n++;buckets.set(key,b)
+  }
+  return [...buckets.values()].sort((a,b)=>a.time-b.time).map(b=>({time:b.time,wait:Math.round(b.sum/b.n)}))
+}
+
+function populateHistorySelectors(){
+  const parkSel=document.getElementById("historyPark"),prev=parkSel.value;
+  parkSel.innerHTML='<option value="">Select park</option>'+allParks.map(p=>`<option value="${escapeHtml(p.name)}">${escapeHtml(p.name)}</option>`).join("");
+  if(allParks.some(p=>p.name===prev))parkSel.value=prev;
+  updateHistoryRideOptions()
+}
+
+function updateHistoryRideOptions(){
+  const park=document.getElementById("historyPark").value,rideSel=document.getElementById("historyRide");
+  if(!park){rideSel.innerHTML='<option value="">Park average</option>';rideSel.disabled=true;drawHistory();return}
+  const p=allParks.find(x=>x.name===park);
+  const prev=rideSel.value;
+  const names=(p?.rides||[]).map(r=>r.name).sort((a,b)=>a.localeCompare(b));
+  rideSel.innerHTML='<option value="">Park average</option>'+names.map(n=>`<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join("");
+  rideSel.disabled=false;
+  if(names.includes(prev))rideSel.value=prev;
+  drawHistory()
+}
+
+function formatChartTime(ts,range){
+  const d=new Date(ts);
+  if(range==="today")return d.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
+  if(range==="7")return d.toLocaleDateString([],{weekday:"short",hour:"2-digit"});
+  return d.toLocaleDateString([],{day:"numeric",month:"short"})
+}
+
+function makeSvgChart(rows,avg,range){
+  const W=720,H=260,L=44,R=14,T=18,B=36,plotW=W-L-R,plotH=H-T-B;
+  const maxWait=Math.max(10,...rows.map(r=>r.wait),avg||0);
+  const yMax=Math.ceil(maxWait/10)*10;
+  const minT=rows[0].time,maxT=rows[rows.length-1].time||minT+1;
+  const x=t=>L+(maxT===minT?plotW/2:(t-minT)/(maxT-minT)*plotW);
+  const y=v=>T+plotH-(v/yMax)*plotH;
+  const grid=[];
+  for(let i=0;i<=4;i++){
+    const val=Math.round(yMax*i/4),yy=y(val);
+    grid.push(`<line x1="${L}" y1="${yy}" x2="${W-R}" y2="${yy}" stroke="#e5e7eb" stroke-width="1"/><text x="${L-7}" y="${yy+4}" text-anchor="end" font-size="10" fill="#6b7280">${val}</text>`)
+  }
+  const pts=rows.map(r=>`${x(r.time).toFixed(1)},${y(r.wait).toFixed(1)}`).join(" ");
+  const avgY=y(avg);
+  const labels=[];
+  const labelCount=Math.min(4,rows.length);
+  for(let i=0;i<labelCount;i++){
+    const idx=Math.round(i*(rows.length-1)/Math.max(1,labelCount-1)),r=rows[idx];
+    labels.push(`<text x="${x(r.time)}" y="${H-10}" text-anchor="${i===0?"start":i===labelCount-1?"end":"middle"}" font-size="10" fill="#6b7280">${escapeHtml(formatChartTime(r.time,range))}</text>`)
+  }
+  return `<svg class="history-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Historical wait-time chart">
+    ${grid.join("")}
+    <line x1="${L}" y1="${avgY}" x2="${W-R}" y2="${avgY}" stroke="#d97706" stroke-width="2" stroke-dasharray="7 5"/>
+    <polyline fill="none" stroke="#2563eb" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" points="${pts}"/>
+    ${rows.length<=80?rows.map(r=>`<circle cx="${x(r.time)}" cy="${y(r.wait)}" r="2.8" fill="#2563eb"><title>${escapeHtml(formatChartTime(r.time,range))}: ${r.wait} min</title></circle>`).join(""):""}
+    ${labels.join("")}
+    <text x="7" y="13" font-size="10" fill="#6b7280">min</text>
+  </svg>`
+}
+
+async function drawHistory(){
+  const park=document.getElementById("historyPark").value,ride=document.getElementById("historyRide").value,range=document.getElementById("historyRange").value,box=document.getElementById("historyChartBox");
+  if(!park){
+    box.innerHTML='<div class="chart-empty">Choose a park to view its history.</div>';
+    document.getElementById("histNow").textContent="—";document.getElementById("histAvg").textContent="—";document.getElementById("histSamples").textContent="0";return
+  }
+  box.innerHTML='<div class="chart-empty">Loading history…</div>';
+  const entity=ride?rideEntity(park,ride):parkEntity(park);
+  const rows=await getHistory(entity,rangeStart(range));
+  document.getElementById("histSamples").textContent=String(rows.length);
+  if(!rows.length){
+    document.getElementById("histNow").textContent="—";document.getElementById("histAvg").textContent="—";
+    box.innerHTML='<div class="chart-empty">No history recorded yet for this selection.<br>The app will save a reading every 5 minutes while it is open.</div>';return
+  }
+  const latest=rows[rows.length-1].wait,avg=Math.round(rows.reduce((s,r)=>s+r.wait,0)/rows.length);
+  document.getElementById("histNow").textContent=`${latest}m`;
+  document.getElementById("histAvg").textContent=`${avg}m`;
+  const chartRows=aggregateForChart(rows,range);
+  box.innerHTML=makeSvgChart(chartRows,avg,range)
+}
+
+/* ---------- Live load / UI ---------- */
+async function load(){
+  const app=document.getElementById("app");app.className="loading";app.textContent="Loading live queue times…";
+  try{
+    const d=await fetchJson("https://api.themeparks.wiki/v1/destinations");
+    const parks=extractParks(d);
+    const results=await Promise.all(parks.map(async p=>{
+      try{
+        const live=await fetchJson(`https://api.themeparks.wiki/v1/entity/${encodeURIComponent(p.id)}/live`);
+        return {...p,rides:parseLive(live),error:null}
+      }catch(err){return {...p,rides:[],error:err.message}}
+    }));
+    allParks=results.sort((a,b)=>a.name.localeCompare(b.name));
+    lastUpdated=new Date();
+    populateHistorySelectors();
+    render();
+    await recordHistory(allParks);
+    drawHistory()
+  }catch(err){
+    app.className="error";app.innerHTML=`Could not load the live feed.<br><small>${err.message}</small>`;
+    document.getElementById("updated").textContent="Live data unavailable"
+  }
+}
+
+function filteredParks(){
+  const q=norm(document.getElementById("search").value),sort=document.getElementById("sort").value;
+  return allParks.map(p=>{
+    let rides=p.rides.filter(r=>(!q||norm(p.name).includes(q)||norm(r.name).includes(q))&&(!favouritesOnly||favourites.has(favouriteKey(p.name,r.name))));
+    if(sort==="short")rides.sort((a,b)=>(a.wait??9999)-(b.wait??9999));
+    if(sort==="long")rides.sort((a,b)=>(b.wait??-1)-(a.wait??-1));
+    return {...p,rides}
+  }).filter(p=>(!q||norm(p.name).includes(q)||p.rides.length)&&(!favouritesOnly||p.rides.length))
+}
+
 function escapeHtml(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
-function render(){const app=document.getElementById("app");app.className="parks";app.innerHTML="";const visible=filteredParks();const open=allParks.flatMap(p=>p.rides).filter(r=>r.status==="OPERATING"&&Number.isFinite(r.wait)),waits=open.map(r=>r.wait);document.getElementById("openCount").textContent=open.length||"0";document.getElementById("avgWait").textContent=waits.length?`${Math.round(waits.reduce((a,b)=>a+b,0)/waits.length)}m`:"—";document.getElementById("maxWait").textContent=waits.length?`${Math.max(...waits)}m`:"—";document.getElementById("updated").textContent=lastUpdated?`Updated ${lastUpdated.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})}`:"Not updated";if(!visible.length){app.className="empty";app.textContent="No matching park or ride.";return}for(const p of visible){const card=document.createElement("section");card.className="park";const operating=p.rides.filter(r=>r.status==="OPERATING"&&Number.isFinite(r.wait)),avg=operating.length?Math.round(operating.reduce((s,r)=>s+r.wait,0)/operating.length):null;const head=document.createElement("div");head.className="park-head";head.innerHTML=`<div><h2>${escapeHtml(p.name)}</h2><div class="small">${operating.length} live waits${p.destination&&p.destination!==p.name?` · ${escapeHtml(p.destination)}`:""}</div></div><div class="avg">${avg==null?"No live avg":`${avg} min avg`}</div>`;card.appendChild(head);const rides=document.createElement("div");rides.className="rides";if(p.error){rides.innerHTML='<div class="error">Live feed unavailable for this park right now.</div>'}else if(!p.rides.length){rides.innerHTML='<div class="empty">No current public ride waits available.</div>'}else{for(const r of p.rides){const row=document.createElement("div");row.className="ride";const isOpen=r.status==="OPERATING",label=isOpen&&Number.isFinite(r.wait)?`${r.wait} min`:r.status==="CLOSED"?"Closed":Number.isFinite(r.wait)?`${r.wait} min`:r.status.replaceAll("_"," ");row.innerHTML=`<div><div class="ride-name">${escapeHtml(r.name)}${isOpen?'<span class="pill">Open</span>':''}</div><div class="ride-meta">${escapeHtml(r.type)}</div></div><div class="wait ${isOpen?waitClass(r.wait):"w0"}">${escapeHtml(label)}</div>`;rides.appendChild(row)}}card.appendChild(rides);app.appendChild(card)}}
-document.getElementById("refreshBtn").addEventListener("click",load);document.getElementById("search").addEventListener("input",render);document.getElementById("sort").addEventListener("change",render);load();setInterval(load,5*60*1000);if("serviceWorker"in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}))}
+
+function render(){
+  const app=document.getElementById("app");app.className="parks";app.innerHTML="";
+  const visible=filteredParks();
+  const open=allParks.flatMap(p=>p.rides).filter(r=>r.status==="OPERATING"&&Number.isFinite(r.wait)),waits=open.map(r=>r.wait);
+  document.getElementById("openCount").textContent=open.length||"0";
+  document.getElementById("avgWait").textContent=waits.length?`${Math.round(waits.reduce((a,b)=>a+b,0)/waits.length)}m`:"—";
+  document.getElementById("maxWait").textContent=waits.length?`${Math.max(...waits)}m`:"—";
+  document.getElementById("updated").textContent=lastUpdated?`Updated ${lastUpdated.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})}`:"Not updated";
+  const ff=document.getElementById("favFilter");ff.classList.toggle("active",favouritesOnly);ff.textContent=`${favouritesOnly?"★":"☆"} Favourites${favourites.size?` (${favourites.size})`:""}`;
+  const [o1,o2]=splitForWindows(open.length||0), [a1,a2]=splitForWindows(waits.length?`${Math.round(waits.reduce((a,b)=>a+b,0)/waits.length)}m`:"—","m"), [m1,m2]=splitForWindows(waits.length?`${Math.max(...waits)}m`:"—","m"), [f1,f2]=splitForWindows(favourites.size||0);
+  document.getElementById("trainOpenA").textContent=o1; document.getElementById("trainOpenB").textContent=o2;
+  document.getElementById("trainAvgA").textContent=a1; document.getElementById("trainAvgB").textContent=a2;
+  document.getElementById("trainMaxA").textContent=m1; document.getElementById("trainMaxB").textContent=m2;
+  document.getElementById("trainFavA").textContent=f1; document.getElementById("trainFavB").textContent=f2;
+
+  if(!visible.length){app.className="empty";app.textContent=favouritesOnly?"No favourite rides saved yet. Tap ☆ beside a ride to save it.":"No matching park or ride.";return}
+  for(const p of visible){
+    const card=document.createElement("section");card.className="park";
+    const source=allParks.find(x=>x.id===p.id)||p,allPark=source.rides,operating=allPark.filter(r=>r.status==="OPERATING"&&Number.isFinite(r.wait));
+    const parkClosed=allPark.length>0&&operating.length===0&&allPark.every(r=>r.status==="CLOSED"||r.status==="DOWN"||r.status==="UNKNOWN");
+    const avg=operating.length?Math.round(operating.reduce((s,r)=>s+r.wait,0)/operating.length):null;
+    const head=document.createElement("div");head.className="park-head";
+    head.innerHTML=`<div><div class="park-title-row">${logoMarkup("park",p.name)}<div><div class="section-title-row"><h2>${escapeHtml(p.name)}</h2><span class="window-badge">${parkClosed?"X":operating.length}</span></div><div class="small">${parkClosed?"Park closed / no rides operating":`${operating.length} live waits`}${p.destination&&p.destination!==p.name?` · ${escapeHtml(p.destination)}`:""}</div><div class="park-train-strip"><span class="park-window">${parkClosed?"CL":avg==null?"--":avg}</span><span class="park-window">${parkClosed?"OS":"m avg"}</span></div></div></div></div><div class="avg ${parkClosed?"closed":""}">${parkClosed?"Closed":avg==null?"No live avg":`${avg} min avg`}</div>`;
+    card.appendChild(head);
+    const rides=document.createElement("div");rides.className="rides";
+    if(p.error){rides.innerHTML='<div class="error">Live feed unavailable for this park right now.</div>'}
+    else if(!p.rides.length){rides.innerHTML='<div class="empty">No current public ride waits available.</div>'}
+    else{
+      for(const r of p.rides){
+        const row=document.createElement("div");row.className="ride";
+        const isOpen=r.status==="OPERATING",label=isOpen&&Number.isFinite(r.wait)?`${r.wait} min`:r.status==="CLOSED"?"Closed":Number.isFinite(r.wait)?`${r.wait} min`:r.status.replaceAll("_"," ");
+        const key=favouriteKey(p.name,r.name),saved=favourites.has(key);
+        row.innerHTML=`<div class="ride-main">${logoMarkup("ride",r.name)}<div class="ride-copy"><div class="ride-name">${escapeHtml(r.name)}${isOpen?'<span class="pill">Open</span>':''}</div><div class="ride-meta">${escapeHtml(r.type)}</div></div></div><button class="fav-btn ${saved?"saved":""}" type="button" data-fav="${escapeHtml(key)}" aria-label="${saved?"Remove from favourites":"Add to favourites"}">${saved?"★":"☆"}</button><div class="wait ${isOpen?waitClass(r.wait):"w0"}">${escapeHtml(label)}</div>`;
+        rides.appendChild(row)
+      }
+    }
+    card.appendChild(rides);app.appendChild(card)
+  }
+}
+
+document.getElementById("refreshBtn").addEventListener("click",load);
+document.getElementById("search").addEventListener("input",render);
+document.getElementById("sort").addEventListener("change",render);
+document.getElementById("favFilter").addEventListener("click",()=>{favouritesOnly=!favouritesOnly;render()});
+document.getElementById("app").addEventListener("click",e=>{const b=e.target.closest("[data-fav]");if(b)toggleFavourite(b.dataset.fav)});
+document.getElementById("historyPark").addEventListener("change",updateHistoryRideOptions);
+document.getElementById("historyRide").addEventListener("change",drawHistory);
+document.getElementById("historyRange").addEventListener("change",drawHistory);
+
+load();
+setInterval(load,5*60*1000);
+if("serviceWorker"in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}))}
 </script>
 </body></html>
